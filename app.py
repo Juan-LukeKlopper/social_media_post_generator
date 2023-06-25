@@ -1,11 +1,10 @@
 import os
 import streamlit as st
-from apikey import apikey
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 
-os.environ['OPENAI_API_KEY'] = apikey
+apikey = os.environ.get('OPENAI_API_KEY')
 
 st.title("Social Media Post Generator")
 prompt = st.text_input("Please enter a topic or item to generate social media around")
