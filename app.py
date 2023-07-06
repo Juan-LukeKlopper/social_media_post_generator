@@ -36,8 +36,6 @@ discord2_template = PromptTemplate(
         template='You are a social Media manager and content creator please generate a long discord in the tone of Lex Fridman around this prompt, please do not mention his name and tweet out of first person perspective: {topic} '
         )
 
-# Today we worked on setting up a basic playground where artist can combine multiple inputs into a chain where they will then generate cool new artworks using AI
-
 llm = OpenAI(temperature=0.9)
 tweet_chain = LLMChain(llm=llm, prompt=tweet_template, verbose=True, output_key='tweet1')
 tweet2_chain = LLMChain(llm=llm, prompt=tweet2_template, verbose=True, output_key='tweet2')
@@ -45,16 +43,30 @@ tweet3_chain = LLMChain(llm=llm, prompt=tweet3_template, verbose=True, output_ke
 discord_chain = LLMChain(llm=llm, prompt=discord_template, verbose=True, output_key='discord1')
 discord2_chain = LLMChain(llm=llm, prompt=discord2_template, verbose=True, output_key='discord2')
 
+@st.cache(hash_funcs={LLMChain: lambda _: None})  # Cache the prompt generation results
+def generate_prompt_output(prompt):
+    if prompt:
+        tweet1 = tweet_chain.run(topic=prompt)
+        tweet2 = tweet2_chain.run(topic=prompt)
+        tweet3 = tweet3_chain.run(topic=prompt)
+        discord1 = discord_chain.run(topic=prompt)
+        discord2 = discord2_chain.run(topic=prompt)
+        return tweet1, tweet2, tweet3, discord1, discord2
+    else:
+        return None
 
+
+output = generate_prompt_output(prompt)
 
 if prompt:
-    tweet1 = tweet_chain.run(topic=prompt)
-    tweet2 = tweet2_chain.run(topic=prompt)
-    tweet3 = tweet3_chain.run(topic=prompt)
-    discord1 = discord_chain.run(topic=prompt)
-    discord2 = discord2_chain.run(topic=prompt)
-    st.write(f'Tweet option 1: {tweet1}')
-    st.write(f'Tweet option 2: {tweet2}')
-    st.write(f'Tweet option 3: {tweet3}')
+    tweet1, tweet2, tweet3, discord1, discord2 = generate_prompt_output(prompt)
+    option = st.radio('Please select one or multiple options from below',
+                  key="twitter_choice",
+                  options=[tweet1, tweet2, tweet3],
+                  )
     st.write(f'discord message option 1: {discord1}')
     st.write(f'discord message option 2: {discord2}')
+    if option:
+        st.write('You selected:', option)
+
+
