@@ -43,7 +43,7 @@ tweet3_chain = LLMChain(llm=llm, prompt=tweet3_template, verbose=True, output_ke
 discord_chain = LLMChain(llm=llm, prompt=discord_template, verbose=True, output_key='discord1')
 discord2_chain = LLMChain(llm=llm, prompt=discord2_template, verbose=True, output_key='discord2')
 
-@st.cache(hash_funcs={LLMChain: lambda _: None})  # Cache the prompt generation results
+@st.cache_data()  # Cache the prompt generation results
 def generate_prompt_output(prompt):
     if prompt:
         tweet1 = tweet_chain.run(topic=prompt)
@@ -60,13 +60,16 @@ output = generate_prompt_output(prompt)
 
 if prompt:
     tweet1, tweet2, tweet3, discord1, discord2 = generate_prompt_output(prompt)
-    option = st.radio('Please select one or multiple options from below',
+    tweet_option = st.radio('Please select one option from below for Twitter',
                   key="twitter_choice",
                   options=[tweet1, tweet2, tweet3],
                   )
-    st.write(f'discord message option 1: {discord1}')
-    st.write(f'discord message option 2: {discord2}')
-    if option:
-        st.write('You selected:', option)
+    discord_option = st.radio('Please select one option from below for Discord',
+                  key="discord_choice",
+                  options=[discord1, discord2],
+                  )
+    if tweet_option and discord_option:
+        st.write('You selected this for twitrer: ', tweet_option)
+        st.write('You selected this for discord: ', discord_option)
 
 
