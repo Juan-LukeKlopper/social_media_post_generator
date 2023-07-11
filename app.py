@@ -1,4 +1,6 @@
 import os
+import asyncio
+from discord_utils import post_to_discord
 import streamlit as st
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
@@ -65,14 +67,20 @@ if prompt:
     tweet1, tweet2, tweet3, discord1, discord2 = generate_prompt_output(prompt)
     tweet_option = st.radio('Please select one option from below for Twitter',
                   key="twitter_choice",
-                  options=[tweet1, tweet2, tweet3],
+                  options=['None',tweet1, tweet2, tweet3],
                   )
     discord_option = st.radio('Please select one option from below for Discord',
                   key="discord_choice",
-                  options=[discord1, discord2],
+                  options=['None',discord1, discord2],
                   )
-    if tweet_option and discord_option:
-        st.write('You selected this for twitrer: ', tweet_option)
-        st.write('You selected this for discord: ', discord_option)
+    if tweet_option != "None":
+        st.write('You selected this for Twitter: ', tweet_option)
+        if st.button("Post to Twitter"):
+            twitter_message = tweet_option
+            #
 
-
+    if discord_option != "None":
+        st.write('You selected this for Discord: ', discord_option)
+        if st.button("Post to discord"):
+            discord_message = discord_option
+            asyncio.run(post_to_discord(discord_message))
