@@ -1,3 +1,4 @@
 smg/
 apikey.py
 __pycache__
+.env
